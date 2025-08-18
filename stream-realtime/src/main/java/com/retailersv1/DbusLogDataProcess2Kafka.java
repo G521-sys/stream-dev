@@ -22,34 +22,32 @@ import org.apache.flink.util.OutputTag;
 import java.util.Date;
 import java.util.HashMap;
 
-/**
- * @Package com.retailersv1.DbusLogDataProcess2Kafka
- * @Author zhou.han
- * @Date 2024/12/23 14:27
- * @description: Log Task-02
- */
-public class DbusLogDataProcess2Kafka {
 
+public class DbusLogDataProcess2Kafka {
+    //定义kafka的相关配置
     private static final String kafka_topic_base_log_data = ConfigUtils.getString("REALTIME.KAFKA.LOG.TOPIC");
     private static final String kafka_botstrap_servers = ConfigUtils.getString("kafka.bootstrap.servers");
     private static final String kafka_err_log = ConfigUtils.getString("kafka.err.log");
+    //定义kafka的日志输出
     private static final String kafka_start_log = ConfigUtils.getString("kafka.start.log");
     private static final String kafka_display_log = ConfigUtils.getString("kafka.display.log");
     private static final String kafka_action_log = ConfigUtils.getString("kafka.action.log");
     private static final String kafka_dirty_topic = ConfigUtils.getString("kafka.dirty.topic");
     private static final String kafka_page_topic = ConfigUtils.getString("kafka.page.topic");
+    //定义侧输出标签，用于数据分流
     private static final OutputTag<String> errTag = new OutputTag<String>("errTag") {};
     private static final OutputTag<String> startTag = new OutputTag<String>("startTag") {};
     private static final OutputTag<String> displayTag = new OutputTag<String>("displayTag") {};
     private static final OutputTag<String> actionTag = new OutputTag<String>("actionTag") {};
     private static final OutputTag<String> dirtyTag = new OutputTag<String>("dirtyTag") {};
+    //用于收集不同类型的数据流
     private static final HashMap<String,DataStream<String>> collectDsMap = new HashMap<>();
 
     @SneakyThrows
     public static void main(String[] args) {
-
+        //设置Hadoop用户名,解决可能的权限问题
         System.setProperty("HADOOP_USER_NAME","root");
-
+        //检查必要的配置参数是否存在
         CommonUtils.printCheckPropEnv(
                 false,
                 kafka_topic_base_log_data,
@@ -61,10 +59,10 @@ public class DbusLogDataProcess2Kafka {
                 kafka_action_log,
                 kafka_dirty_topic
         );
-
+        //初始化Flink执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        EnvironmentSettingUtils.defaultParameter(env);
-
+//        EnvironmentSettingUtils.defaultParameter(env);// 注释掉的默认参数配置
+        //从kafka中读取数据
         DataStreamSource<String> kafkaSourceDs = env.fromSource(
                 KafkaUtils.buildKafkaSource(
                         kafka_botstrap_servers,
@@ -76,7 +74,7 @@ public class DbusLogDataProcess2Kafka {
                 "read_kafka_realtime_log"
         );
 
-
+        //数据转换与脏数据处理
         SingleOutputStreamOperator<JSONObject> processDS = kafkaSourceDs.process(new ProcessFunction<String, JSONObject>() {
             @Override
             public void processElement(String s, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) {
@@ -90,18 +88,20 @@ public class DbusLogDataProcess2Kafka {
         }).uid("convert_json_process")
           .name("convert_json_process");
         processDS.print();
+        // 处理脏数据并写入Kafka
         SideOutputDataStream<String> dirtyDS = processDS.getSideOutput(dirtyTag);
         dirtyDS.print("dirtyDS -> ");
         dirtyDS.sinkTo(KafkaUtils.buildKafkaSink(kafka_botstrap_servers,kafka_dirty_topic))
                 .uid("sink_dirty_data_to_kafka")
                 .name("sink_dirty_data_to_kafka");
-
+        //新老访客状态修复
         KeyedStream<JSONObject, String> keyedStream = processDS.keyBy(obj -> obj.getJSONObject("common").getString("mid"));
         SingleOutputStreamOperator<JSONObject> mapDs = keyedStream.map(new RichMapFunction<JSONObject, JSONObject>() {
                     private ValueState<String> lastVisitDateState;
 
                     @Override
                     public void open(Configuration parameters) {
+                        // 初始化状态，设置10秒的TTL
                         ValueStateDescriptor<String> valueStateDescriptor = new ValueStateDescriptor<>("lastVisitDateState", String.class);
                         valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(10))
                                 .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
@@ -111,10 +111,12 @@ public class DbusLogDataProcess2Kafka {
 
                     @Override
                     public JSONObject map(JSONObject jsonObject) throws Exception {
+                        // 修复新老访客状态的核心逻辑
                         String isNew = jsonObject.getJSONObject("common").getString("is_new");
                         String lastVisitDate = lastVisitDateState.value();
                         Long ts = jsonObject.getLong("ts");
                         String curVisitDate = DateTimeUtils.tsToDate(ts);
+                        // 根据业务规则修复is_new字段值
                         if ("1".equals(isNew)) {
                             //如果is_new的值为1
                             if (StringUtils.isEmpty(lastVisitDate)) {
@@ -146,16 +148,16 @@ public class DbusLogDataProcess2Kafka {
                     }
                 }).uid("fix_isNew_map")
                 .name("fix_isNew_map");
-
+        // 数据分流处理
         SingleOutputStreamOperator<String> processTagDs = mapDs.process(new ProcessSplitStreamFunc(errTag,startTag,displayTag,actionTag))
                 .uid("flag_stream_process")
                 .name("flag_stream_process");
-
+        // 获取各类型的侧输出流
         SideOutputDataStream<String> sideOutputErrDS = processTagDs.getSideOutput(errTag);
         SideOutputDataStream<String> sideOutputStartDS = processTagDs.getSideOutput(startTag);
         SideOutputDataStream<String> sideOutputDisplayTagDS = processTagDs.getSideOutput(displayTag);
         SideOutputDataStream<String> sideOutputActionTagTagDS = processTagDs.getSideOutput(actionTag);
-
+        // 将不同类型的数据流存入Map
         collectDsMap.put("errTag",sideOutputErrDS);
         collectDsMap.put("startTag",sideOutputStartDS);
         collectDsMap.put("displayTag",sideOutputDisplayTagDS);
@@ -163,7 +165,7 @@ public class DbusLogDataProcess2Kafka {
         collectDsMap.put("page",processTagDs);
 
         SplitDs2kafkaTopicMsg(collectDsMap);
-
+        //数据写入 Kafka
         env.disableOperatorChaining();
         env.execute("Job-DbusLogDataProcess2Kafka");
     }

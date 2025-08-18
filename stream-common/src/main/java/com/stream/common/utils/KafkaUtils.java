@@ -242,8 +242,8 @@ public final class KafkaUtils {
 
     public static void main(String[] args) {
 //        System.err.println(delTopic("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
-        createKafkaTopic("cdh01:9092,cdh02:9092,cdh03:9092","realtime_v2_action_log",6, (short) 1,
-                kafkaTopicExists("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
+        createKafkaTopic("cdh01:9092,cdh02:9092,cdh3:9092","realtime_v2_action_log",6, (short) 1,
+                kafkaTopicExists("cdh01:9092,cdh02:9092,cdh3:9092", "realtime_v2_action_log"));
 //        System.err.println(kafkaTopicExists("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
     }
 

@@ -20,7 +20,7 @@ public class PaimonMinioUtils {
                 "  (                                                                    " +
                 "    'type' = 'paimon',                                                 " +
                 "    'warehouse' = 's3://paimon-data/',                                 " +
-                "    's3.endpoint' = 'http://10.160.60.17:9000',                         " +
+                "    's3.endpoint' = 'http://cdh01:9003',                         " +
                 "    's3.access-key' = 'X7pljEi3steavVn5h3z3',                          " +
                 "    's3.secret-key' = 'KDaSxEyfSEmKiaJDBbJ6RpBxMBp6OwnRbkA8LnKL',      " +
                 "    's3.connection.ssl.enabled' = 'false',                             " +

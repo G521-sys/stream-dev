@@ -28,7 +28,7 @@ public class TestFlinkData {
 
         System.setProperty("HADOOP_USER_NAME","root");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        EnvironmentSettingUtils.defaultParameter(env);
+//        EnvironmentSettingUtils.defaultParameter(env);
 
         // 取数
         SingleOutputStreamOperator<String> kafkaCdcDbSource = env.fromSource(

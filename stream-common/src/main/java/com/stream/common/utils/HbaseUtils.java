@@ -203,7 +203,7 @@ public class HbaseUtils {
     @SneakyThrows
     public static void main(String[] args) {
         System.setProperty("HADOOP_USER_NAME","root");
-        HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh03");
+        HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh3");
 //        hbaseUtils.dropHbaseNameSpace("GMALL_FLINK_2207");
 //        System.err.println(hbaseUtils.tableIsExists("realtime_v2:dim_user_info"));
         hbaseUtils.deleteTable("ns_zxn:dim_base_category1");

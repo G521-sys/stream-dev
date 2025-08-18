@@ -1,0 +1,21 @@
+{
+  "op": "r",
+  "after": {
+    "log": "{\"common\":{\"ar\":\"4\",\"ba\":\"iPhone\",\"ch\":\"Appstore\",\"is_new\":\"0\",\"md\":\"iPhone 13\",\"mid\":\"mid_72\",\"os\":\"iOS 13.3.1\",\"sid\":\"aacf7b8d-df68-43d0-aa7d-670df6233b96\",\"vc\":\"v2.1.132\"},\"displays\":[{\"item\":\"21\",\"item_type\":\"sku_id\",\"pos_id\":8,\"pos_seq\":0},{\"item\":\"27\",\"item_type\":\"sku_id\",\"pos_id\":8,\"pos_seq\":1},{\"item\":\"34\",\"item_type\":\"sku_id\",\"pos_id\":8,\"pos_seq\":2},{\"item\":\"9\",\"item_type\":\"sku_id\",\"pos_id\":8,\"pos_seq\":3},{\"item\":\"6\",\"item_type\":\"sku_id\",\"pos_id\":9,\"pos_seq\":0},{\"item\":\"7\",\"item_type\":\"sku_id\",\"pos_id\":9,\"pos_seq\":1},{\"item\":\"10\",\"item_type\":\"sku_id\",\"pos_id\":9,\"pos_seq\":2},{\"item\":\"30\",\"item_type\":\"sku_id\",\"pos_id\":9,\"pos_seq\":3},{\"item\":\"10\",\"item_type\":\"sku_id\",\"pos_id\":9,\"pos_seq\":4}],\"page\":{\"during_time\":14905,\"page_id\":\"activity1111\",\"refer_id\":\"3\"},\"ts\":1755528421905}",
+    "id": 7697
+  },
+  "source": {
+    "server_id": 0,
+    "version": "1.6.4.Final",
+    "file": "",
+    "connector": "mysql",
+    "pos": 0,
+    "name": "mysql_binlog_source",
+    "row": 0,
+    "ts_ms": 0,
+    "snapshot": "false",
+    "db": "realtime_v1",
+    "table": "z_log"
+  },
+  "ts_ms": 1755585143395
+}

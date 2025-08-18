@@ -29,27 +29,36 @@ import java.util.HashMap;
  * @description: Log Task-02
  */
 public class DbusLogDataProcess2Kafka {
-
+    //kafaka的日志名称
     private static final String kafka_topic_base_log_data = ConfigUtils.getString("REALTIME.KAFKA.LOG.TOPIC");
+    // Zookeeper 地址
     private static final String kafka_botstrap_servers = ConfigUtils.getString("kafka.bootstrap.servers");
+    // kafka的错误日志名称
     private static final String kafka_err_log = ConfigUtils.getString("kafka.err.log");
+    // kafka的启动日志名称
     private static final String kafka_start_log = ConfigUtils.getString("kafka.start.log");
+    // kafka的曝光日志名称
     private static final String kafka_display_log = ConfigUtils.getString("kafka.display.log");
+    // kafka的Action日志名称
     private static final String kafka_action_log = ConfigUtils.getString("kafka.action.log");
+    // kafka的Dirty日志名称
     private static final String kafka_dirty_topic = ConfigUtils.getString("kafka.dirty.topic");
+    // kafka的页面日志名称
     private static final String kafka_page_topic = ConfigUtils.getString("kafka.page.topic");
+    //kafka的测流
     private static final OutputTag<String> errTag = new OutputTag<String>("errTag") {};
     private static final OutputTag<String> startTag = new OutputTag<String>("startTag") {};
     private static final OutputTag<String> displayTag = new OutputTag<String>("displayTag") {};
     private static final OutputTag<String> actionTag = new OutputTag<String>("actionTag") {};
     private static final OutputTag<String> dirtyTag = new OutputTag<String>("dirtyTag") {};
+    //HashMap集合
     private static final HashMap<String,DataStream<String>> collectDsMap = new HashMap<>();
 
     @SneakyThrows
     public static void main(String[] args) {
-
+        // 设置 Hadoop 用户名，解决 HBase/Kafka 等组件访问权限问题（若集群开启权限校验）
         System.setProperty("HADOOP_USER_NAME","root");
-
+        // 检查参数
         CommonUtils.printCheckPropEnv(
                 false,
                 kafka_topic_base_log_data,
@@ -61,10 +70,11 @@ public class DbusLogDataProcess2Kafka {
                 kafka_action_log,
                 kafka_dirty_topic
         );
-
+        // 设置运行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // 设置运行参数
         EnvironmentSettingUtils.defaultParameter(env);
-
+        //读取kafka数据源
         DataStreamSource<String> kafkaSourceDs = env.fromSource(
                 KafkaUtils.buildKafkaSource(
                         kafka_botstrap_servers,
@@ -76,7 +86,7 @@ public class DbusLogDataProcess2Kafka {
                 "read_kafka_realtime_log"
         );
 
-
+        //        kafka的Dirty日志名称
         SingleOutputStreamOperator<JSONObject> processDS = kafkaSourceDs.process(new ProcessFunction<String, JSONObject>() {
             @Override
             public void processElement(String s, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) {
@@ -89,14 +99,16 @@ public class DbusLogDataProcess2Kafka {
             }
         }).uid("convert_json_process")
           .name("convert_json_process");
-        processDS.print();
+
         SideOutputDataStream<String> dirtyDS = processDS.getSideOutput(dirtyTag);
         dirtyDS.print("dirtyDS -> ");
+        //Dirty数据存入kafka
         dirtyDS.sinkTo(KafkaUtils.buildKafkaSink(kafka_botstrap_servers,kafka_dirty_topic))
                 .uid("sink_dirty_data_to_kafka")
                 .name("sink_dirty_data_to_kafka");
-
+        //对mid进行分组
         KeyedStream<JSONObject, String> keyedStream = processDS.keyBy(obj -> obj.getJSONObject("common").getString("mid"));
+        //求出新老用户
         SingleOutputStreamOperator<JSONObject> mapDs = keyedStream.map(new RichMapFunction<JSONObject, JSONObject>() {
                     private ValueState<String> lastVisitDateState;
 
@@ -150,12 +162,12 @@ public class DbusLogDataProcess2Kafka {
         SingleOutputStreamOperator<String> processTagDs = mapDs.process(new ProcessSplitStreamFunc(errTag,startTag,displayTag,actionTag))
                 .uid("flag_stream_process")
                 .name("flag_stream_process");
-
+        //获取测流的数据
         SideOutputDataStream<String> sideOutputErrDS = processTagDs.getSideOutput(errTag);
         SideOutputDataStream<String> sideOutputStartDS = processTagDs.getSideOutput(startTag);
         SideOutputDataStream<String> sideOutputDisplayTagDS = processTagDs.getSideOutput(displayTag);
         SideOutputDataStream<String> sideOutputActionTagTagDS = processTagDs.getSideOutput(actionTag);
-
+        //把所有数据写入HashMap集合
         collectDsMap.put("errTag",sideOutputErrDS);
         collectDsMap.put("startTag",sideOutputStartDS);
         collectDsMap.put("displayTag",sideOutputDisplayTagDS);

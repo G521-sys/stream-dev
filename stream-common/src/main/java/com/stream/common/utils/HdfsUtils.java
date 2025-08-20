@@ -3,7 +3,7 @@ package com.stream.common.utils;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 
-import com.stream.domain.HdfsInfo;
+import com.stream.common.domain.HdfsInfo;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.core.io.SimpleVersionedSerializer;

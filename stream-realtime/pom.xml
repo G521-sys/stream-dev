@@ -39,6 +39,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-protocol</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>2.4.11</version> <!-- 需替换为实际使用的HBase版本，要与集群版本兼容 -->
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
             <version>1.17.1</version>
@@ -315,8 +327,13 @@
             <version>${flink.version}</version>
             <!--            <scope>provided</scope>-->
         </dependency>
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.2.4.RELEASE</version>
+        </dependency>
 
-<!--        <dependency>-->
+        <!--        <dependency>-->
 <!--            <groupId>groupId</groupId>-->
 <!--            <artifactId>data-encryption</artifactId>-->
 <!--            <version>1.0-RELEASE</version>-->

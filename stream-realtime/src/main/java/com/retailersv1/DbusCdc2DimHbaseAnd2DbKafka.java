@@ -104,8 +104,8 @@ public class DbusCdc2DimHbaseAnd2DbKafka {
                 }).uid("clean_json_column_map")
                 .name("clean_json_column_map");
         //{"op":"r","after":{"sink_row_key":"id","sink_family":"info","sink_table":"dim_activity_rule","source_table":"activity_rule","sink_columns":"id,activity_id,activity_type,condition_amount,condition_num,benefit_amount,benefit_discount,benefit_level"}}
-//        cdcDbDimStreamMapCleanColumn.print();
-        //把数据存入到hbase
+        cdcDbDimStreamMapCleanColumn.print("cdcDbDimStreamMapCleanColumn==>");
+        // 根据配置创建/更新 HBase 维度表
         SingleOutputStreamOperator<JSONObject> tpDS = cdcDbDimStreamMapCleanColumn.map(new MapUpdateHbaseDimTableFunc(CDH_ZOOKEEPER_SERVER, CDH_HBASE_NAME_SPACE))
                 .uid("map_create_hbase_dim_table")
                 .name("map_create_hbase_dim_table");

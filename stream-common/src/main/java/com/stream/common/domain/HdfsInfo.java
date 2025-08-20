@@ -1,7 +1,13 @@
-package com.stream.domain;
+package com.stream.common.domain;
 
 import java.io.Serializable;
 
+/**
+ * @author han.zhou
+ * @time: 2023/9/14 18:03
+ * @className: HdfsInfo
+ * @description 封装HDFS信息 Bean
+ */
 public class HdfsInfo implements Serializable {
     private String hdfsUrl;
     private boolean hdfsNeedPartition;

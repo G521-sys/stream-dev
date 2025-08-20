@@ -1,4 +1,4 @@
-package com.stream.domain;
+package com.stream.common.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author han.zhou
+ * @date 2021-10-08 16:00
+ **/
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

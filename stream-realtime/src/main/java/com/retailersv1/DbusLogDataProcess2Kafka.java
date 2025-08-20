@@ -158,7 +158,7 @@ public class DbusLogDataProcess2Kafka {
                     }
                 }).uid("fix_isNew_map")
                 .name("fix_isNew_map");
-
+        //调用分流数据的工具类
         SingleOutputStreamOperator<String> processTagDs = mapDs.process(new ProcessSplitStreamFunc(errTag,startTag,displayTag,actionTag))
                 .uid("flag_stream_process")
                 .name("flag_stream_process");

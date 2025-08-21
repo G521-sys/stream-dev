@@ -47,4 +47,8 @@ public final class ConfigUtils {
         String value = properties.getProperty(key).trim();
         return Strings.isNullOrEmpty(value) ? defaultValue : Long.parseLong(value);
     }
+
+    public static String getString(String s, String id) {
+        return properties.getProperty(s, id);
+    }
 }

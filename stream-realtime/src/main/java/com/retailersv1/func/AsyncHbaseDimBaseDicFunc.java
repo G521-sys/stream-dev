@@ -83,20 +83,7 @@ public class AsyncHbaseDimBaseDicFunc extends RichAsyncFunction<JSONObject,JSONO
 
     @Override
     public void timeout(JSONObject input, ResultFuture<JSONObject> resultFuture) throws Exception {
-        // 记录超时日志但不中断流处理
-//        System.err.println("WARN: Async HBase call timeout for record: " + input.toJSONString());
-
-        // 选择以下一种处理方式：
-//        super.timeout(input, resultFuture);
-        // 方式1: 继续处理（传递原始数据）
-//        resultFuture.complete(Collections.singleton(input));
-
-        // 方式2: 标记错误但继续流处理
-        // input.put("hbase_query_error", "timeout");
-        // resultFuture.complete(Collections.singleton(input));
-
-        // 方式3: 如果业务要求严格一致性，可以选择抛出自定义异常
-        // resultFuture.completeExceptionally(new RuntimeException("HBase query timeout for: " + input.toJSONString()));
+        super.timeout(input, resultFuture);
     }
 
     @Override

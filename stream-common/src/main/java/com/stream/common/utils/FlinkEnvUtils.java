@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class FlinkEnvUtils {
 
     public static StreamExecutionEnvironment getFlinkRuntimeEnv(){
-        if (com.stream.common.utils.CommonUtils.isIdeaEnv()){
+        if (CommonUtils.isIdeaEnv()){
             System.err.println("Action Local Env");
             return StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         }

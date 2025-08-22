@@ -27,6 +27,7 @@ kafka.start.log=start_log
 kafka.display.log=display_log
 kafka.action.log=action_log
 kafka.page.topic=ods_page_log
+kafka.cart.log=ods_cart_log
 kafka.cdc.db.topic=cdc_db_topic
 # Zookeeper ????
 zookeeper.server.host.list=192.168.200.128:2181

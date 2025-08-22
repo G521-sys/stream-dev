@@ -30,6 +30,12 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
+        <!-- 在pom.xml中添加RocksDB依赖 -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-statebackend-rocksdb</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -58,10 +64,6 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-statebackend-rocksdb</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>redis.clients</groupId>
@@ -100,6 +102,11 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.janeluo</groupId>
+            <artifactId>ikanalyzer</artifactId>
+            <version>2012_u6</version>
+        </dependency>
 
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -115,18 +122,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- HBase 公共配置依赖 -->
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-common</artifactId>
-            <version>2.2.7</version> <!-- 与客户端版本一致 -->
-        </dependency>
-        <!-- HBase 服务器端依赖（按需添加，部分 API 可能需要） -->
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-server</artifactId>
-            <version>2.2.7</version> <!-- 与客户端版本一致 -->
-        </dependency>
+
 
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -238,4 +234,5 @@
             </resource>
         </resources>
     </build>
+
 </project>

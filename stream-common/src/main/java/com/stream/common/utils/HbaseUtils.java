@@ -19,6 +19,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * @author han.zhou
+ * @time: 2021/10/14 11:39
+ * @className: HBaseUtils
+ * @description HBase 工具类
+ */
 public class HbaseUtils {
     private Connection connection;
     private static final Logger LOG = LoggerFactory.getLogger(HbaseUtils.class.getName());
@@ -203,10 +209,10 @@ public class HbaseUtils {
     @SneakyThrows
     public static void main(String[] args) {
         System.setProperty("HADOOP_USER_NAME","root");
-        HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh3");
+        HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh03");
 //        hbaseUtils.dropHbaseNameSpace("GMALL_FLINK_2207");
 //        System.err.println(hbaseUtils.tableIsExists("realtime_v2:dim_user_info"));
-        hbaseUtils.deleteTable("realtime_v2:dim_base_category1");
+        hbaseUtils.deleteTable("ns_chenming:dim_activity_info");
 //        hbaseUtils.getHbaseNameSpaceAllTablesList("realtime_v2");
     }
 }

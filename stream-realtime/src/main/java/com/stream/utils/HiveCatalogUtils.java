@@ -4,10 +4,10 @@ import com.stream.common.utils.ConfigUtils;
 import org.apache.flink.table.catalog.hive.HiveCatalog;
 
 /**
- * @Package com.stream.utils.HiveCatalogUtils
- * @Author zhou.han
- * @Date 2024/12/30 08:57
- * @description: hive catalog utils
+ * @Package com.stream.utils
+ * @Author xiaoye
+ * @Date 2025/8/15 16:21
+ * @description:
  */
 public class HiveCatalogUtils {
     private static final String HIVE_CONF_DIR = ConfigUtils.getString("hive.conf.dir");

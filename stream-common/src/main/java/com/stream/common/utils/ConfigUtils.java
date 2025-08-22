@@ -7,7 +7,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Properties;
 
-
+/**
+ * 配置文件工具类
+ * time: 2021/8/11 9:48 className: ConfigUtils.java
+ *
+ * @author han.zhou
+ * @version 1.0.0
+ */
 public final class ConfigUtils {
     private static final Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
 
@@ -46,9 +52,5 @@ public final class ConfigUtils {
     public static long getLong(String key, long defaultValue) {
         String value = properties.getProperty(key).trim();
         return Strings.isNullOrEmpty(value) ? defaultValue : Long.parseLong(value);
-    }
-
-    public static String getString(String s, String id) {
-        return properties.getProperty(s, id);
     }
 }

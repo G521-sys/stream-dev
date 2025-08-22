@@ -12,6 +12,12 @@ import redis.clients.jedis.exceptions.JedisException;
 import java.net.URI;
 import java.util.*;
 
+/**
+ * @Package com.stream.common.utils.RedisUtils.java
+ * @Author zhou.han
+ * @Date 2025/3/29 23:09
+ * @description: Lua check redis words
+ */
 
 public class RedisLuaUtils {
     private static final Logger logger = LoggerFactory.getLogger(RedisLuaUtils.class);

@@ -3,6 +3,12 @@ package com.stream.common.utils;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
+/**
+ * @Package com.stream.common.utils.PushMessageUtils
+ * @Author zhou.han
+ * @Date 2024/12/11 23:26
+ * @description: Push Message
+ */
 public class PushMessageUtils {
 
     public static void PushFeishuMsg(String messageType,String platformUrl,String platform,String context){

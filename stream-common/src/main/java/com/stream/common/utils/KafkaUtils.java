@@ -2,7 +2,6 @@ package com.stream.common.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.stream.common.bean.TableProcessDwd;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -11,16 +10,26 @@ import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 /**
  * time: 2021/8/11 10:20 className: KafkaUtils.java
@@ -29,6 +38,8 @@ import java.util.Properties;
  * @version 1.0.0
  */
 public final class KafkaUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaUtils.class);
 
     /**
      * 构建基于字符串序列化的Kafka属性
@@ -153,8 +164,6 @@ public final class KafkaUtils {
         return kafkaSink;
     }
 
-
-
     public static class SafeStringDeserializationSchema implements DeserializationSchema<String> {
 
         @Override
@@ -176,6 +185,86 @@ public final class KafkaUtils {
         }
     }
 
+    public static boolean kafkaTopicExists(String bootStrapServer, String kafkaTopicName) {
+        Properties properties = new Properties();
+        properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
+        try {
+            AdminClient adminClient = AdminClient.create(properties);
+            // 直接查询指定主题的元数据
+            Map<String, TopicDescription> stringTopicDescriptionMap = adminClient.describeTopics(Collections.singleton(kafkaTopicName)).allTopicNames().get();
+            // 若返回的map包含该主题，则存在
+            System.err.println(stringTopicDescriptionMap);
+            return stringTopicDescriptionMap.containsKey(kafkaTopicName);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof UnknownTopicOrPartitionException) {
+                return false;
+            }
+            throw new RuntimeException("查询主题元数据失败", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean delTopic(String bootStrapServer,String kafkaTopicName){
+        if (kafkaTopicExists(bootStrapServer,kafkaTopicName)){
+            Properties properties = new Properties();
+            properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,bootStrapServer);
+            try{
+                AdminClient adminClient = AdminClient.create(properties);
+                adminClient.deleteTopics(Collections.singleton(kafkaTopicName)).all().get();
+                Thread.sleep(2000);
+                logger.warn("del kafka topic -> {}",kafkaTopicName);
+                return !kafkaTopicExists(bootStrapServer,kafkaTopicName);
+            } catch (ExecutionException | InterruptedException e) {
+                logger.error("删除Kafka主题失败，topic={}", kafkaTopicName, e);
+                throw new RuntimeException(e);
+            }
+        }
+        logger.warn("kafka topic is not exist {}",kafkaTopicName);
+        return false;
+    }
+
+    public static void createKafkaTopic(String bootstrapServers, String topicName, int partitions, short replicationFactor, boolean recreateIfExists){
+        Properties props = new Properties();
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        try(AdminClient adminClient = AdminClient.create(props)) {
+            boolean topicExists = kafkaTopicExists(bootstrapServers, topicName);
+            if (topicExists && recreateIfExists){
+                logger.info("主题 {} 已存在，开始删除...", topicName);
+                boolean deleteSuccess = delTopic(bootstrapServers, topicName);
+                if (!deleteSuccess) {
+                    logger.error("删除主题 {} 失败，终止创建", topicName);
+                }
+                Thread.sleep(2000);
+            }
+
+            if (!kafkaTopicExists(bootstrapServers, topicName)){
+                logger.info("开始创建主题 {}，分区数：{}，副本数：{}", topicName, partitions, replicationFactor);
+                NewTopic newTopic = new NewTopic(topicName, partitions, replicationFactor);
+                adminClient.createTopics(Collections.singleton(newTopic)).all().get();
+                if (kafkaTopicExists(bootstrapServers, topicName)) {
+                    logger.info("主题 {} 创建成功", topicName);
+                } else {
+                    logger.error("主题 {} 创建失败，验证不存在", topicName);
+                }
+            }else {
+                logger.info("主题 {} 已存在，且无需删除，直接返回", topicName);
+            }
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+//        System.err.println(delTopic("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
+        createKafkaTopic("cdh01:9092,cdh02:9092,cdh03:9092","realtime_v2_action_log",6, (short) 1,
+                kafkaTopicExists("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
+//        System.err.println(kafkaTopicExists("cdh01:9092,cdh02:9092,cdh03:9092", "realtime_v2_action_log"));
+    }
 
 
 }

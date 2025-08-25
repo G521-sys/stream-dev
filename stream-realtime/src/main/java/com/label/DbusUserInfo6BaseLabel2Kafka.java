@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.label.domain.DimBaseCategory;
 import com.label.func.*;
-import com.retailersv.func.ProcessFilterRepeatTsDataFunc;
+import com.retailersv1.func.ProcessFilterRepeatTsDataFunc;
 import com.stream.common.utils.ConfigUtils;
 import com.stream.common.utils.EnvironmentSettingUtils;
 import com.stream.common.utils.JdbcUtils;

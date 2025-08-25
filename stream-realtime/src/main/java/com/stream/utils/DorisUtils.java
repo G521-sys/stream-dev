@@ -9,12 +9,6 @@ import org.apache.doris.flink.sink.writer.serializer.SimpleStringSerializer;
 
 import java.util.Properties;
 
-/**
- * @Package com.stream.utils
- * @Author xiaoye
- * @Date 2025/8/21 14:41
- * @description:
- */
 public class DorisUtils {
     private static final String DORIS_FE_NODES = ConfigUtils.getString("doris.fe.nodes");
     private static final String DORIS_DATABASE = ConfigUtils.getString("doris.database");

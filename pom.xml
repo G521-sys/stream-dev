@@ -33,8 +33,20 @@
         <cdh.dep.version>3.0.0-cdh6.3.2</cdh.dep.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
+
             <!-- flink 相关依赖 开始 -->
 
             <dependency>
@@ -355,5 +367,6 @@
             </resource>
         </resources>
     </build>
+
 
 </project>

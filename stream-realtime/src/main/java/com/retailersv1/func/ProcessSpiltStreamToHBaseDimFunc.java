@@ -19,10 +19,7 @@ import org.apache.hadoop.hbase.util.MD5Hash;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Package com.retailersv1.func.ProcessSpiltStreamToHBaseDim
@@ -77,7 +74,7 @@ public class ProcessSpiltStreamToHBaseDimFunc extends BroadcastProcessFunction<J
                 if (!jsonObject.getString("op").equals("d")){
                     JSONObject after = jsonObject.getJSONObject("after");
                     String sinkTableName = configMap.get(tableName).getSinkTable();
-                    sinkTableName = "default:"+sinkTableName;
+                    sinkTableName = "realtime_v2:"+sinkTableName;
                     String hbaseRowKey = after.getString(configMap.get(tableName).getSinkRowKey());
                     Table hbaseConnectionTable = hbaseConnection.getTable(TableName.valueOf(sinkTableName));
                     Put put = new Put(Bytes.toBytes(MD5Hash.getMD5AsHex(hbaseRowKey.getBytes(StandardCharsets.UTF_8))));

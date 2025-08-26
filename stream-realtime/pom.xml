@@ -17,82 +17,39 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!--    <repositories>-->
-    <!--        <repository>-->
-    <!--            <id>cloudera</id>-->
-    <!--            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>-->
-    <!--        </repository>-->
-    <!--    </repositories>-->
-
     <repositories>
-        <!-- 添加Flink官方仓库 -->
         <repository>
-            <id>apache.releases</id>
-            <name>Apache Release Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <!-- 保留已有的阿里云仓库 -->
-        <repository>
-            <id>aliyun</id>
-            <url>https://maven.aliyun.com/nexus/content/groups/public</url>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
         </repository>
     </repositories>
 
-
     <dependencies>
-
-
-
-
-
-
-
-
+        <dependency>
+            <groupId>groupId</groupId>
+            <artifactId>stream-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
 
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.49</version>
+            <version>8.0.33</version>
         </dependency>
-
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-statebackend-rocksdb</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs-client</artifactId>
-            <version>${hadoop.version}</version> <!-- 与集群Hadoop版本一致 -->
-        </dependency>
-
-
-
-
-
-
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
-
-
 
 
         <!--        flink 流批开发依赖包-->
@@ -136,39 +93,6 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
         </dependency>
-
-        <!-- 使用Java 8兼容的commons-logging版本 -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-        </dependency>
-
-        <!-- 使用Java 8兼容的commons-beanutils版本 -->
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.apache.hive</groupId>-->
-<!--            <artifactId>hive-jdbc</artifactId>-->
-<!--            <version>2.1.1</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>log4j-slf4j-impl</artifactId>-->
-<!--                    <groupId>org.apache.logging.log4j</groupId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.hive</groupId>
@@ -243,29 +167,6 @@
             <artifactId>flink-connector-mysql-cdc</artifactId>
         </dependency>
 
-        <!--        Flink CDC Pg connector-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.flink</groupId>-->
-        <!--            <artifactId>flink-connector-postgres-cdc</artifactId>-->
-        <!--            <version>3.4.0</version>-->
-        <!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.ververica</groupId>
-            <artifactId>flink-connector-postgres-cdc</artifactId>
-            <version>2.4.2</version>
-            <!--            <scope>provided</scope>-->
-        </dependency>
-
-        <!--        Flink CDC SqlServer connector-->
-        <dependency>
-            <groupId>com.ververica</groupId>
-            <artifactId>flink-connector-sqlserver-cdc</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-
-
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -299,7 +200,7 @@
         <dependency>
             <groupId>org.apache.doris</groupId>
             <artifactId>flink-doris-connector-1.17</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.2</version>
         </dependency>
 
         <dependency>
@@ -325,6 +226,28 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-jdbc</artifactId>
             <version>3.1.1-1.17</version>
+        </dependency>
+
+        <!-- SQL Server JDBC 驱动 -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>9.4.1.jre8</version>
+        </dependency>
+
+        <!-- Flink SQL Server CDC 连接器（包含 SqlServerSource） -->
+        <dependency>
+            <groupId>com.ververica</groupId>
+            <artifactId>flink-connector-sqlserver-cdc</artifactId>
+            <version>2.4.1</version> <!-- 版本需与 Flink 版本兼容，2.4.x 适配 Flink 1.15+ -->
+        </dependency>
+
+
+        <!-- 若使用 Flink 1.17+，可能需要额外添加 debezium 依赖 -->
+        <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-connector-sqlserver</artifactId>
+            <version>1.9.7.Final</version>
         </dependency>
 
 
@@ -389,38 +312,11 @@
             <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
-            <groupId>groupId</groupId>
-            <artifactId>stream-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime-web</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.janeluo</groupId>
             <artifactId>ikanalyzer</artifactId>
             <version>2012_u6</version>
         </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>2.0.6</version>
-        </dependency>
+
 
     </dependencies>
 

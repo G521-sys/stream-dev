@@ -68,7 +68,7 @@ public class DbusLogDataProcess2Kafka {
                 WatermarkStrategy.noWatermarks(),
                 "read_kafka_realtime_log"
         );
-
+        kafkaSourceDs.print();
         SingleOutputStreamOperator<JSONObject> processDs = kafkaSourceDs.process(new ProcessFunction<String, JSONObject>() {
                     @Override
                     public void processElement(String s, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) throws Exception {
@@ -173,11 +173,11 @@ public class DbusLogDataProcess2Kafka {
                 .uid("sk_pageMsg2Kafka")
                 .name("sk_pageMsg2Kafka");
 
-        dataStreamHashMap.get("errTag").print("errTag ->");
-        dataStreamHashMap.get("startTag").print("startTag ->");
-        dataStreamHashMap.get("displayTag").print("displayTag ->");
-        dataStreamHashMap.get("actionTag").print("actionTag ->");
-        dataStreamHashMap.get("page").print("page ->");
+//        dataStreamHashMap.get("errTag").print("errTag ->");
+//        dataStreamHashMap.get("startTag").print("startTag ->");
+//        dataStreamHashMap.get("displayTag").print("displayTag ->");
+//        dataStreamHashMap.get("actionTag").print("actionTag ->");
+//        dataStreamHashMap.get("page").print("page ->");
     }
 }
 

@@ -147,7 +147,7 @@ public class DbusLogDataProcess2Kafka {
         collectDsMap.put("actionTag",sideOutputActionTagTagDS);
         collectDsMap.put("page",processTagDs);
 
-        SplitDs2kafkaTopicMsg(collectDsMap);
+//        SplitDs2kafkaTopicMsg(collectDsMap);
 
         env.disableOperatorChaining();
         env.execute("Job-DbusLogDataProcess2Kafka");
@@ -173,11 +173,11 @@ public class DbusLogDataProcess2Kafka {
                 .uid("sk_pageMsg2Kafka")
                 .name("sk_pageMsg2Kafka");
 
-//        dataStreamHashMap.get("errTag").print("errTag ->");
-//        dataStreamHashMap.get("startTag").print("startTag ->");
-//        dataStreamHashMap.get("displayTag").print("displayTag ->");
-//        dataStreamHashMap.get("actionTag").print("actionTag ->");
-//        dataStreamHashMap.get("page").print("page ->");
+        dataStreamHashMap.get("errTag").print("errTag ->");
+        dataStreamHashMap.get("startTag").print("startTag ->");
+        dataStreamHashMap.get("displayTag").print("displayTag ->");
+        dataStreamHashMap.get("actionTag").print("actionTag ->");
+        dataStreamHashMap.get("page").print("page ->");
     }
 }
 

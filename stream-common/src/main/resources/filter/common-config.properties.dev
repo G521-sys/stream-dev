@@ -37,10 +37,12 @@ kafka.dwd.payment.info=dwd_payment_info
 kafka.dwd.return.order.info=dwd_return_order_info
 kafka.dwd.return.money.topic=dwd_return_money
 kafka.dwd.base.db=dwd_base_db
+kafka.dws.shop.behavior.agg.topic=dws_shop_behavior_agg
 kafka.dws.page.log=dws_page_log
 kafka.dwd.shop.behavior.topic=dwd_shop_behavior
 kafka.dws.shop.metrics.topic=dws_shop_metrics
 kafka.dws.user.behavior.topic=dws_user_behavior
+kafka.dws.shop.behavior.topic=dws_shop_behavior
 kafka.db.fact.comment.topic=kafka_db_fact_comment_topic
 # Zookeeper 本地配置
 zookeeper.server.host.list=cdh01:2181

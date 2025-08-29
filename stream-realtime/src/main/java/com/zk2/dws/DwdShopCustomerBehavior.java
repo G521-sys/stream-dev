@@ -1,4 +1,4 @@
-package com.zk2.dwd;
+package com.zk2.dws;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

@@ -1,23 +1,371 @@
 {
-  "op": "r",
-  "after": {
-    "create_time": 1639440000000,
-    "id": 164,
-    "value_name": "200W",
-    "attr_id": 72
+  "actions": [
+    {
+      "action_id": "get_coupon",
+      "item": "1",
+      "item_type": "coupon_id",
+      "ts": 1756037688167
+    }
+  ],
+  "common": {
+    "ar": "1",
+    "ba": "Redmi",
+    "ch": "360",
+    "is_new": "1",
+    "md": "Redmi k50",
+    "mid": "mid_305",
+    "os": "Android 13.0",
+    "sid": "59ea28f4-8429-4c4b-94aa-6ffb57e4db55",
+    "uid": "273",
+    "vc": "v2.1.134"
   },
-  "source": {
-    "server_id": 0,
-    "version": "1.9.7.Final",
-    "file": "",
-    "connector": "mysql",
-    "pos": 0,
-    "name": "mysql_binlog_source",
-    "row": 0,
-    "ts_ms": 0,
-    "snapshot": "false",
-    "db": "realtime_v1",
-    "table": "base_attr_value"
+  "page": {
+    "during_time": 16099,
+    "item": "28",
+    "item_type": "sku_ids",
+    "last_page_id": "good_detail",
+    "page_id": "order"
   },
-  "ts_ms": 1756040090516
+  "ts": 1756037688167
 }
+{
+  "common": {
+    "ar": "11",
+    "ba": "realme",
+    "ch": "oppo",
+    "is_new": "1",
+    "md": "realme Neo2",
+    "mid": "mid_384",
+    "os": "Android 12.0",
+    "sid": "599df5fe-271e-4ce0-834f-3f4d8c23d74a",
+    "vc": "v2.0.1"
+  },
+  "start": {
+    "entry": "icon",
+    "loading_time": 14698,
+    "open_ad_id": 12,
+    "open_ad_ms": 3965,
+    "open_ad_skip_ms": 72586
+  },
+  "ts": 1756042015847
+}
+{
+  "common": {
+    "ar": "18",
+    "ba": "iPhone",
+    "ch": "Appstore",
+    "is_new": "1",
+    "md": "iPhone 14",
+    "mid": "mid_24",
+    "os": "iOS 13.3.1",
+    "sid": "c5d04f69-4e62-4fdd-80df-adda39f9e3c8",
+    "vc": "v2.1.111"
+  },
+  "displays": [
+    {
+      "item": "3",
+      "item_type": "sku_id",
+      "pos_id": 10,
+      "pos_seq": 0
+    },
+    {
+      "item": "31",
+      "item_type": "sku_id",
+      "pos_id": 10,
+      "pos_seq": 1
+    }
+  ],
+  "page": {
+    "during_time": 9325,
+    "item": "匡威",
+    "item_type": "keyword",
+    "last_page_id": "home",
+    "page_id": "good_list"
+  },
+  "ts": 1756041258346
+}
+{
+  "common": {
+    "ar": "27",
+    "ba": "xiaomi",
+    "ch": "wandoujia",
+    "is_new": "1",
+    "md": "xiaomi 13",
+    "mid": "mid_69",
+    "os": "Android 13.0",
+    "sid": "bf11ba35-1b60-4878-b252-cdadf5c6cc7f",
+    "uid": "336",
+    "vc": "v2.1.132"
+  },
+  "displays": [
+    {
+      "item": "32",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 0
+    },
+    {
+      "item": "6",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 1
+    },
+    {
+      "item": "20",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 2
+    },
+    {
+      "item": "6",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 3
+    },
+    {
+      "item": "5",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 4
+    },
+    {
+      "item": "17",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 5
+    },
+    {
+      "item": "7",
+      "item_type": "sku_id",
+      "pos_id": 4,
+      "pos_seq": 6
+    }
+  ],
+  "page": {
+    "during_time": 16027,
+    "item": "15",
+    "item_type": "sku_id",
+    "last_page_id": "register",
+    "page_id": "good_detail"
+  },
+  "ts": 1756040626054
+}
+{
+  "common": {
+    "ar": "24",
+    "ba": "xiaomi",
+    "ch": "xiaomi",
+    "is_new": "0",
+    "md": "xiaomi 12 ultra ",
+    "mid": "mid_460",
+    "os": "Android 13.0",
+    "sid": "19515d2b-160a-47a7-b39d-3f37714e1ca6",
+    "vc": "v2.1.134"
+  },
+  "displays": [
+    {
+      "item": "17",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 0
+    },
+    {
+      "item": "14",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 1
+    },
+    {
+      "item": "24",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 2
+    },
+    {
+      "item": "25",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 3
+    },
+    {
+      "item": "20",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 4
+    },
+    {
+      "item": "3",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 5
+    },
+    {
+      "item": "23",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 6
+    },
+    {
+      "item": "32",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 7
+    },
+    {
+      "item": "35",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 8
+    },
+    {
+      "item": "12",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 9
+    },
+    {
+      "item": "1",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 10
+    },
+    {
+      "item": "35",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 11
+    },
+    {
+      "item": "26",
+      "item_type": "sku_id",
+      "pos_id": 6,
+      "pos_seq": 12
+    }
+  ],
+  "page": {
+    "during_time": 9640,
+    "last_page_id": "home",
+    "page_id": "mine"
+  },
+  "ts": 1756041289078
+}
+{
+  "common": {
+    "ar": "32",
+    "ba": "Redmi",
+    "ch": "xiaomi",
+    "is_new": "0",
+    "md": "Redmi k50",
+    "mid": "mid_375",
+    "os": "Android 13.0",
+    "sid": "94b86bdb-f2d1-4448-b779-b4df4daacd86",
+    "uid": "282",
+    "vc": "v2.1.134"
+  },
+  "page": {
+    "during_time": 18566,
+    "item": "25",
+    "item_type": "sku_ids",
+    "last_page_id": "good_detail",
+    "page_id": "order"
+  },
+  "ts": 1756038021203
+}
+{
+  "common": {
+    "ar": "28",
+    "ba": "vivo",
+    "ch": "oppo",
+    "is_new": "1",
+    "md": "vivo x90",
+    "mid": "mid_142",
+    "os": "Android 13.0",
+    "sid": "02d2a568-7066-4e3d-a937-d6bff392b16a",
+    "uid": "273",
+    "vc": "v2.1.132"
+  },
+  "displays": [
+    {
+      "item": "10",
+      "item_type": "sku_id",
+      "pos_id": 3,
+      "pos_seq": 0
+    },
+    {
+      "item": "23",
+      "item_type": "sku_id",
+      "pos_id": 3,
+      "pos_seq": 1
+    }
+  ],
+  "page": {
+    "during_time": 14260,
+    "page_id": "search"
+  },
+  "ts": 1756041267084
+}
+{
+  "common": {
+    "ar": "1",
+    "ba": "Redmi",
+    "ch": "360",
+    "is_new": "1",
+    "md": "Redmi k50",
+    "mid": "mid_305",
+    "os": "Android 13.0",
+    "sid": "59ea28f4-8429-4c4b-94aa-6ffb57e4db55",
+    "uid": "273",
+    "vc": "v2.1.134"
+  },
+  "page": {
+    "during_time": 17824,
+    "item": "317",
+    "item_type": "order_id",
+    "last_page_id": "order",
+    "page_id": "payment"
+  },
+  "ts": 1756037705991
+}
+{
+  "common": {
+    "ar": "11",
+    "ba": "realme",
+    "ch": "oppo",
+    "is_new": "1",
+    "md": "realme Neo2",
+    "mid": "mid_384",
+    "os": "Android 12.0",
+    "sid": "599df5fe-271e-4ce0-834f-3f4d8c23d74a",
+    "vc": "v2.0.1"
+  },
+  "displays": [
+    {
+      "item": "1",
+      "item_type": "activity_id",
+      "pos_id": 1,
+      "pos_seq": 1
+    },
+    {
+      "item": "2",
+      "item_type": "activity_id",
+      "pos_id": 1,
+      "pos_seq": 1
+    },
+    {
+      "item": "3",
+      "item_type": "activity_id",
+      "pos_id": 1,
+      "pos_seq": 1
+    },
+    {
+      "item": "4",
+      "item_type": "activity_id",
+      "pos_id": 1,
+      "pos_seq": 1
+    },
+    {
+      "item": "18",
+      "item_type": "sku_id",
+      "pos_id": 1,
+      "pos_seq": 4
+    },

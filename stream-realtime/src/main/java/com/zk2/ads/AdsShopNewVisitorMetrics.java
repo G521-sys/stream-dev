@@ -1,4 +1,4 @@
-package com.zk2.dws;
+package com.zk2.ads;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;

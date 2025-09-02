@@ -15,7 +15,193 @@ dws.mysql.database=realtime_v1_config
 
 # Redis 本地配置
 redis.host=localhost
-redis.port=6379
+redis.port=6379import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+               import org.apache.flink.table.api.EnvironmentSettings;
+               import org.apache.flink.table.api.Table;
+               import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+
+               /**
+                * DWS层：回访用户行为汇总处理
+                * 功能：从实时日志提取用户当日行为，关联历史行为，生成用户级汇总数据
+                */
+               public class DwsVisitBackSummaryProcessor {
+                   public static void main(String[] args) throws Exception {
+                       // 1. 初始化Flink流处理环境
+                       StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+                       EnvironmentSettings settings = EnvironmentSettings.newInstance()
+                               .inStreamingMode() // 实时处理模式
+                               .build();
+                       StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, settings);
+
+                       // 2. 注册实时日志数据源表（Kafka）
+                       registerRealtimeLogSource(tEnv);
+
+                       // 3. 注册DWS层输出表（MySQL）
+                       registerDwsSinkTable(tEnv);
+
+                       // 4. 计算DWS层用户行为汇总数据
+                       Table dwsSummaryTable = calculateDwsSummary(tEnv);
+
+                       // 5. 将计算结果写入DWS表
+                       dwsSummaryTable.executeInsert("dws_visit_back_summary")
+                               .print(); // 打印执行结果日志
+
+                       // 6. 启动Flink任务
+                       env.execute("DWS - Visit Back User Behavior Summary Job");
+                   }
+
+                   /**
+                    * 注册实时日志数据源表（Kafka）
+                    */
+                   private static void registerRealtimeLogSource(StreamTableEnvironment tEnv) {
+                       tEnv.executeSql("""
+                           CREATE TABLE IF NOT EXISTS realtime_log (
+                               -- 公共信息（设备、用户标识等）
+                               common ARRAY<ROW<
+                                   ar STRING,      -- 地区编码
+                                   ba STRING,      -- 手机品牌
+                                   ch STRING,      -- 渠道
+                                   is_new STRING,  -- 是否新用户（1=新，0=老）
+                                   md STRING,      -- 手机型号
+                                   mid STRING,     -- 设备唯一标识（作为用户ID）
+                                   os STRING,      -- 操作系统
+                                   sid STRING,     -- 会话ID
+                                   vc STRING       -- 版本号
+                               >>,
+                               -- 商品展示信息
+                               displays ARRAY<ROW<
+                                   item STRING,     -- 商品SKU_ID
+                                   item_type STRING,-- 物品类型（固定为sku_id）
+                                   pos_id INT,      -- 展示位置ID
+                                   pos_seq INT      -- 展示顺序
+                               >>,
+                               -- 页面信息
+                               page ROW<
+                                   during_time INT, -- 页面停留时间（毫秒）
+                                   page_id STRING,  -- 页面ID（如activity1111）
+                                   refer_id STRING  -- 来源ID
+                               >,
+                               ts BIGINT,             -- 时间戳（毫秒）
+                               action_type STRING,     -- 用户行为类型（visit=访问，purchase=购买，follow=关注）
+                               payment_amount DECIMAL(16,2), -- 支付金额（仅purchase行为有值）
+                               dt STRING               -- 日期（格式：yyyy-MM-dd，从ts解析或日志自带）
+                           ) WITH (
+                               'connector' = 'kafka',
+                               'topic' = 'realtime_log_topic', -- Kafka主题
+                               'properties.bootstrap.servers' = 'kafka-broker:9092', -- Kafka地址
+                               'properties.group.id' = 'dws_visit_back_group', -- 消费者组
+                               'format' = 'json', -- 数据格式（JSON）
+                               'scan.startup.mode' = 'latest-offset', -- 从最新偏移量开始消费
+                               'json.fail-on-missing-field' = 'false', -- 字段缺失不报错
+                               'json.ignore-parse-errors' = 'true'    -- 解析错误忽略
+                           )
+                       """);
+                   }
+
+                   /**
+                    * 注册DWS层输出表（MySQL）
+                    */
+                   private static void registerDwsSinkTable(StreamTableEnvironment tEnv) {
+                       tEnv.executeSql("""
+                           CREATE TABLE IF NOT EXISTS dws_visit_back_summary (
+                               dt STRING,                      -- 统计日期（yyyy-MM-dd）
+                               user_id STRING,                 -- 用户ID（设备mid）
+                               is_new_user INT,                -- 是否新用户（1=是，0=否）
+                               prev_visit_flag INT,            -- 是否有历史访问（1=有，0=无）
+                               prev_purchase_flag INT,         -- 是否有历史购买（1=有，0=无）
+                               current_visit_flag INT,         -- 当日是否访问（1=是，0=否）
+                               current_purchase_flag INT,      -- 当日是否购买（1=是，0=否）
+                               current_payment_amount DECIMAL(16,2), -- 当日支付金额
+                               current_purchase_count INT,     -- 当日购买次数
+                               total_purchase_amount DECIMAL(16,2),  -- 累计支付金额（含当日）
+                               total_purchase_count INT,       -- 累计购买次数（含当日）
+                               is_fans INT,                    -- 当日是否关注店铺（1=是，0=否）
+                               is_member INT,                  -- 是否会员（1=是，0=否）
+                               PRIMARY KEY (dt, user_id) NOT ENFORCED -- 复合主键（日期+用户ID）
+                           ) WITH (
+                               'connector' = 'jdbc',
+                               'url' = 'jdbc:mysql://mysql-host:3306/dws?useSSL=false', -- MySQL地址
+                               'table-name' = 'dws_visit_back_summary', -- 表名
+                               'username' = 'root', -- MySQL用户名
+                               'password' = '123456', -- MySQL密码
+                               'sink.buffer-flush.max-rows' = '100', -- 批量写入最大行数
+                               'sink.buffer-flush.interval' = '5s',  -- 批量写入间隔
+                               'sink.max-retries' = '3'              -- 写入失败重试次数
+                           )
+                       """);
+                   }
+
+                   /**
+                    * 计算DWS层用户行为汇总数据
+                    */
+                   private static Table calculateDwsSummary(StreamTableEnvironment tEnv) {
+                       return tEnv.sqlQuery("""
+                           WITH
+                           -- 子查询1：当日用户行为汇总（按用户分组）
+                           daily_user_behavior AS (
+                               SELECT
+                                   dt,
+                                   common[1].mid AS user_id, -- 取数组第一个元素的mid作为用户ID
+                                   -- 是否新用户（1=新，0=老）
+                                   MAX(CASE WHEN common[1].is_new = '1' THEN 1 ELSE 0 END) AS is_new_user,
+                                   -- 当日是否购买（1=是，0=否）
+                                   MAX(CASE WHEN action_type = 'purchase' THEN 1 ELSE 0 END) AS purchase_flag,
+                                   -- 当日支付金额（仅购买行为累加）
+                                   SUM(CASE WHEN action_type = 'purchase' THEN payment_amount ELSE 0 END) AS payment_amount,
+                                   -- 当日购买次数（仅统计purchase行为）
+                                   COUNT(CASE WHEN action_type = 'purchase' THEN 1 ELSE NULL END) AS purchase_count,
+                                   -- 当日是否关注店铺（1=是，0=否）
+                                   MAX(CASE WHEN action_type = 'follow' THEN 1 ELSE 0 END) AS is_fans
+                               FROM realtime_log
+                               WHERE dt = CURRENT_DATE -- 仅处理当日数据
+                               GROUP BY dt, common[1].mid -- 按日期+用户分组
+                           ),
+                           -- 子查询2：历史访问记录（当日之前的访问用户）
+                           history_visit AS (
+                               SELECT DISTINCT user_id
+                               FROM dws_visit_back_summary
+                               WHERE dt < CURRENT_DATE -- 过滤历史日期
+                           ),
+                           -- 子查询3：历史购买汇总（当日之前的购买金额/次数）
+                           history_purchase AS (
+                               SELECT
+                                   user_id,
+                                   SUM(current_payment_amount) AS total_prev_payment, -- 历史支付金额
+                                   SUM(current_purchase_count) AS total_prev_count    -- 历史购买次数
+                               FROM dws_visit_back_summary
+                               WHERE dt < CURRENT_DATE -- 过滤历史日期
+                               GROUP BY user_id
+                           )
+                           -- 最终汇总：关联当日与历史数据
+                           SELECT
+                               SUBSTRING(CAST(CURRENT_TIMESTAMP AS STRING), 1, 10) AS dt, -- 当前日期（yyyy-MM-dd）
+                               a.user_id,
+                               a.is_new_user,
+                               -- 是否有历史访问（关联历史访问表，存在则为1）
+                               CASE WHEN b.user_id IS NOT NULL THEN 1 ELSE 0 END AS prev_visit_flag,
+                               -- 是否有历史购买（关联历史购买表，存在则为1）
+                               CASE WHEN c.user_id IS NOT NULL THEN 1 ELSE 0 END AS prev_purchase_flag,
+                               1 AS current_visit_flag, -- 能进入该流程的用户均有当日访问
+                               a.purchase_flag AS current_purchase_flag,
+                               a.payment_amount AS current_payment_amount,
+                               a.purchase_count AS current_purchase_count,
+                               -- 累计支付金额（历史+当日）
+                               COALESCE(c.total_prev_payment, 0) + COALESCE(a.payment_amount, 0) AS total_purchase_amount,
+                               -- 累计购买次数（历史+当日）
+                               COALESCE(c.total_prev_count, 0) + COALESCE(a.purchase_count, 0) AS total_purchase_count,
+                               a.is_fans,
+                               -- 是否会员（累计金额>5000 或 累计次数>3）
+                               CASE
+                                   WHEN (COALESCE(c.total_prev_payment, 0) + COALESCE(a.payment_amount, 0) > 5000)
+                                       OR (COALESCE(c.total_prev_count, 0) + COALESCE(a.purchase_count, 0) > 3)
+                                   THEN 1 ELSE 0
+                               END AS is_member
+                           FROM daily_user_behavior a
+                           LEFT JOIN history_visit b ON a.user_id = b.user_id -- 关联历史访问
+                           LEFT JOIN history_purchase c ON a.user_id = c.user_id -- 关联历史购买
+                       """);
+                   }
+               }
 redis.user=
 redis.pwd=
 
@@ -42,6 +228,7 @@ kafka.dws.page.log=dws_page_log
 kafka.dwd.shop.behavior.topic=dwd_shop_behavior
 kafka.dws.shop.metrics.topic=dws_shop_metrics
 kafka.dws.user.behavior.topic=dws_user_behavior
+kafka.dws.shop.visitor.wide.topic=dws_shop_visitor_wide
 kafka.dws.shop.behavior.topic=dws_shop_behavior
 kafka.db.fact.comment.topic=kafka_db_fact_comment_topic
 # Zookeeper 本地配置

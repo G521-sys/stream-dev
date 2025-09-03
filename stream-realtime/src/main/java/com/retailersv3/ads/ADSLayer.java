@@ -34,53 +34,56 @@ public class ADSLayer {
     public static void process(DataStream<DWSLayer.QueryCount> dwsStream) {
         // 热门查询分析
         DataStream<HotQuery> hotQueryStream = dwsStream
-            .keyBy(qc -> "all")
-            .map(new RichMapFunction<DWSLayer.QueryCount, HotQuery>() {
-                private transient Map<String, Long> queryCountMap;
-                private transient List<Map.Entry<String, Long>> topQueries;
+                .keyBy(qc -> "all")
+                .map(new RichMapFunction<DWSLayer.QueryCount, HotQuery>() {
+                    private transient Map<String, Long> queryCountMap;
+                    private transient List<Map.Entry<String, Long>> topQueries;
 
-                @Override
-                public void open(Configuration parameters) throws Exception {
-                    queryCountMap = new HashMap<>();
-                    topQueries = new ArrayList<>();
-                }
+                    @Override
+                    public void open(Configuration parameters) throws Exception {
+                        queryCountMap = new HashMap<>();
+                        topQueries = new ArrayList<>();
+                    }
 
-                @Override
-                public HotQuery map(DWSLayer.QueryCount value) throws Exception {
-                    // 更新计数
-                    queryCountMap.put(value.query, 
-                        queryCountMap.getOrDefault(value.query, 0L) + value.count);
-                    
-                    // 排序获取TopN
-                    topQueries = new ArrayList<>(queryCountMap.entrySet());
-                    topQueries.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
-                    
-                    // 只保留Top10
-                    if (topQueries.size() > 10) {
-                        topQueries = topQueries.subList(0, 10);
+                    @Override
+                    public HotQuery map(DWSLayer.QueryCount value) throws Exception {
+                        // 更新计数
+                        queryCountMap.put(value.query,
+                                queryCountMap.getOrDefault(value.query, 0L) + value.count);
+
+                        // 排序获取TopN
+                        topQueries = new ArrayList<>(queryCountMap.entrySet());
+                        topQueries.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+
+                        // 只保留Top10
+                        if (topQueries.size() > 10) {
+                            topQueries = topQueries.subList(0, 10);
+                        }
+
+                        // 返回热门查询（这里返回第一个作为示例）
+                        if (!topQueries.isEmpty()) {
+                            Map.Entry<String, Long> top = topQueries.get(0);
+                            return new HotQuery(top.getKey(), top.getValue(),
+                                    System.currentTimeMillis(), 1);
+                        }
+
+                        return null;
                     }
-                    
-                    // 返回热门查询（这里返回第一个作为示例）
-                    if (!topQueries.isEmpty()) {
-                        Map.Entry<String, Long> top = topQueries.get(0);
-                        return new HotQuery(top.getKey(), top.getValue(), 
-                            System.currentTimeMillis(), 1);
-                    }
-                    
-                    return null;
-                }
-            })
-            .filter(query -> query != null);
-        
+                })
+                .filter(query -> query != null);
+
         // 写入ADS层（Kafka）
         hotQueryStream.map(HotQuery::toString)
-            .addSink(new FlinkKafkaProducer<>(
-                "localhost:9092", 
-                "ads_hot_query", 
-                new SimpleStringSchema()
-            ));
-        
+                .addSink(new FlinkKafkaProducer<>(
+                        "localhost:9092",
+                        "ads_hot_query",
+                        new SimpleStringSchema()
+                ));
+
         // 打印监控
         hotQueryStream.print("ADS Layer - Hot Query");
+    }
+    public static void main(String[] args) {
+
     }
 }
